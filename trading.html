@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SHAFIN UCHIHA TRADER</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: #e6f2ff; }
+    header { background: #1e90ff; color: #fff; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+    nav { display: flex; flex-wrap: wrap; background: #3399ff; }
+    nav button { flex: 1; padding: 12px; background: #3399ff; color: #fff; border: none; cursor: pointer; font-size: 14px; }
+    nav button:hover, nav button.active { background: #1e90ff; }
+    section { display: none; padding: 15px; }
+    section.active { display: block; }
+    .card { background: white; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    input, textarea, select { width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc; border-radius: 4px; }
+    button.action { padding: 8px 15px; margin-top: 8px; cursor: pointer; background: #1e90ff; color: #fff; border: none; border-radius: 4px; }
+    button.delete { background: #d9534f; }
+    img.pattern-img { max-width: 100%; margin-top: 8px; border-radius: 4px; }
+    /* Calculator */
+    .calc-container { max-width: 320px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .calc-display { width: 100%; padding: 10px; margin-bottom: 10px; font-size: 20px; text-align: right; border: 1px solid #ccc; border-radius: 4px; }
+    .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .calc-buttons button { padding: 15px; font-size: 18px; background: #1e90ff; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .calc-buttons button:hover { background: #005fcb; }
+    .calc-buttons .clear { background: #d9534f; }
+  </style>
+</head>
+<body>
+  <header>SHAFIN UCHIHA TRADER</header>
+  <nav>
+    <button onclick="showTab('lot')" class="active">Lot Calc</button>
+    <button onclick="showTab('patterns')">Patterns</button>
+    <button onclick="showTab('candles')">Candles</button>
+    <button onclick="showTab('strategies')">Strategies</button>
+    <button onclick="showTab('history')">History</button>
+    <button onclick="showTab('calculator')">Calculator</button>
+  </nav>  <!-- Lot Calculator -->  <section id="lot" class="active">
+    <h2>Lot Size Calculator</h2>
+    <div class="card">
+      <label>Account Balance ($)</label>
+      <input type="number" id="balance">
+      <label>Risk %</label>
+      <input type="number" id="risk">
+      <label>Stop Loss (pips)</label>
+      <input type="number" id="sl">
+      <label>Pip Value per 1 Lot ($)</label>
+      <input type="number" id="pipValue" value="10">
+      <button class="action" onclick="calcLot()">Calculate</button>
+      <p id="lotResult"></p>
+    </div>
+  </section>  <!-- Chart Patterns -->  <section id="patterns">
+    <h2>Chart Patterns</h2>
+    <div class="card">
+      <input type="text" id="patternName" placeholder="Pattern Name">
+      <textarea id="patternDesc" placeholder="Description"></textarea>
+      <input type="file" id="patternImg">
+      <button class="action" onclick="savePattern()">Save Pattern</button>
+    </div>
+    <div id="patternList"></div>
+  </section>  <!-- Candlestick Patterns -->  <section id="candles">
+    <h2>Candlestick Patterns</h2>
+    <div class="card">
+      <input type="text" id="candleName" placeholder="Pattern Name">
+      <textarea id="candleDesc" placeholder="Description"></textarea>
+      <input type="file" id="candleImg">
+      <button class="action" onclick="saveCandle()">Save Candle</button>
+    </div>
+    <div id="candleList"></div>
+  </section>  <!-- Strategies -->  <section id="strategies">
+    <h2>My Strategies</h2>
+    <div class="card">
+      <textarea id="strategyText" placeholder="Write your strategy..."></textarea>
+      <input type="file" id="strategyImg">
+      <button class="action" onclick="saveStrategy()">Save Strategy</button>
+    </div>
+    <div id="strategyList"></div>
+  </section>  <!-- Trade History -->  <section id="history">
+    <h2>Trade History</h2>
+    <div class="card">
+      <input type="text" id="pair" placeholder="Pair">
+      <input type="number" id="lotInput" placeholder="Lot Size">
+      <input type="number" id="pl" placeholder="Profit/Loss ($)">
+      <input type="file" id="tradeImg">
+      <button class="action" onclick="saveTrade()">Save Trade</button>
+    </div>
+    <div id="tradeList"></div>
+  </section>  <!-- Calculator -->  <section id="calculator">
+    <h2>Calculator</h2>
+    <div class="calc-container">
+      <input type="text" id="calcDisplay" class="calc-display" readonly>
+      <div class="calc-buttons">
+        <button onclick="calcPress('7')">7</button>
+        <button onclick="calcPress('8')">8</button>
+        <button onclick="calcPress('9')">9</button>
+        <button onclick="calcPress('/')">÷</button>
+        <button onclick="calcPress('4')">4</button>
+        <button onclick="calcPress('5')">5</button>
+        <button onclick="calcPress('6')">6</button>
+        <button onclick="calcPress('*')">×</button>
+        <button onclick="calcPress('1')">1</button>
+        <button onclick="calcPress('2')">2</button>
+        <button onclick="calcPress('3')">3</button>
+        <button onclick="calcPress('-')">−</button>
+        <button onclick="calcPress('0')">0</button>
+        <button onclick="calcPress('.')">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="calcPress('+')">+</button>
+        <button class="clear" style="grid-column: span 4;" onclick="clearCalc()">Clear</button>
+      </div>
+    </div>
+  </section>  <script>
+    // Tabs
+    function showTab(tab) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Lot Size Calculator
+    function calcLot() {
+      let bal = parseFloat(document.getElementById('balance').value);
+      let risk = parseFloat(document.getElementById('risk').value);
+      let sl = parseFloat(document.getElementById('sl').value);
+      let pipVal = parseFloat(document.getElementById('pipValue').value);
+      if (bal && risk && sl && pipVal) {
+        let riskAmount = bal * (risk/100);
+        let lotSize = riskAmount / (sl * pipVal);
+        document.getElementById('lotResult').innerText = "Lot Size: " + lotSize.toFixed(2);
+      } else {
+        document.getElementById('lotResult').innerText = "Please fill all fields.";
+      }
+    }
+
+    // Save Chart Pattern
+    function savePattern() {
+      let name = document.getElementById('patternName').value;
+      let desc = document.getElementById('patternDesc').value;
+      let imgFile = document.getElementById('patternImg').files[0];
+      if (!name) return;
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<h3>${name}</h3><p>${desc}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+        document.getElementById('patternList').appendChild(div);
+      }
+      if (imgFile) reader.readAsDataURL(imgFile);
+    }
+
+    // Save Candle Pattern
+    function saveCandle() {
+      let name = document.getElementById('candleName').value;
+      let desc = document.getElementById('candleDesc').value;
+      let imgFile = document.getElementById('candleImg').files[0];
+      if (!name) return;
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<h3>${name}</h3><p>${desc}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+        document.getElementById('candleList').appendChild(div);
+      }
+      if (imgFile) reader.readAsDataURL(imgFile);
+    }
+
+    // Save Strategy
+    function saveStrategy() {
+      let text = document.getElementById('strategyText').value;
+      let imgFile = document.getElementById('strategyImg').files[0];
+      if (!text && !imgFile) return;
+      let div = document.createElement('div');
+      div.className = 'card';
+      if (imgFile) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          div.innerHTML = `<p>${text}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+          document.getElementById('strategyList').appendChild(div);
+        }
+        reader.readAsDataURL(imgFile);
+      } else {
+        div.innerHTML = `<p>${text}</p><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+        document.getElementById('strategyList').appendChild(div);
+      }
+    }
+
+    // Save Trade
+    function saveTrade() {
+      let pair = document.getElementById('pair').value;
+      let lot = document.getElementById('lotInput').value;
+      let pl = document.getElementById('pl').value;
+      let imgFile = document.getElementById('tradeImg').files[0];
+      if (!pair || !lot || !pl) return;
+      let div = document.createElement('div');
+      div.className = 'card';
+      if (imgFile) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          div.innerHTML = `<h3>${pair}</h3><p>Lot: ${lot}</p><p>P/L: $${pl}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+          document.getElementById('tradeList').appendChild(div);
+        }
+        reader.readAsDataURL(imgFile);
+      } else {
+        div.innerHTML = `<h3>${pair}</h3><p>Lot: ${lot}</p><p>P/L: $${pl}</p><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
+        document.getElementById('tradeList').appendChild(div);
+      }
+    }
+
+    // Calculator Functions
+    function calcPress(val) {
+      document.getElementById('calcDisplay').value += val;
+    }
+    function clearCalc() {
+      document.getElementById('calcDisplay').value = '';
+    }
+    function calculate() {
+      try {
+        document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value);
+      } catch {
+        document.getElementById('calcDisplay').value = 'Error';
+      }
+    }
+  </script></body>
+</html>
