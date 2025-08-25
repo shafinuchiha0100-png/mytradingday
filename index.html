@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>SHAFIN UCHIHA TRADER</title>
@@ -34,7 +35,10 @@
     <button onclick="showTab('strategies')">Strategies</button>
     <button onclick="showTab('history')">History</button>
     <button onclick="showTab('calculator')">Calculator</button>
-  </nav>  <!-- Lot Calculator -->  <section id="lot" class="active">
+  </nav>
+
+  <!-- Lot Calculator -->
+  <section id="lot" class="active">
     <h2>Lot Size Calculator</h2>
     <div class="card">
       <label>Account Balance ($)</label>
@@ -48,7 +52,10 @@
       <button class="action" onclick="calcLot()">Calculate</button>
       <p id="lotResult"></p>
     </div>
-  </section>  <!-- Chart Patterns -->  <section id="patterns">
+  </section>
+
+  <!-- Chart Patterns -->
+  <section id="patterns">
     <h2>Chart Patterns</h2>
     <div class="card">
       <input type="text" id="patternName" placeholder="Pattern Name">
@@ -57,7 +64,10 @@
       <button class="action" onclick="savePattern()">Save Pattern</button>
     </div>
     <div id="patternList"></div>
-  </section>  <!-- Candlestick Patterns -->  <section id="candles">
+  </section>
+
+  <!-- Candlestick Patterns -->
+  <section id="candles">
     <h2>Candlestick Patterns</h2>
     <div class="card">
       <input type="text" id="candleName" placeholder="Pattern Name">
@@ -66,7 +76,10 @@
       <button class="action" onclick="saveCandle()">Save Candle</button>
     </div>
     <div id="candleList"></div>
-  </section>  <!-- Strategies -->  <section id="strategies">
+  </section>
+
+  <!-- Strategies -->
+  <section id="strategies">
     <h2>My Strategies</h2>
     <div class="card">
       <textarea id="strategyText" placeholder="Write your strategy..."></textarea>
@@ -74,7 +87,10 @@
       <button class="action" onclick="saveStrategy()">Save Strategy</button>
     </div>
     <div id="strategyList"></div>
-  </section>  <!-- Trade History -->  <section id="history">
+  </section>
+
+  <!-- Trade History -->
+  <section id="history">
     <h2>Trade History</h2>
     <div class="card">
       <input type="text" id="pair" placeholder="Pair">
@@ -84,7 +100,10 @@
       <button class="action" onclick="saveTrade()">Save Trade</button>
     </div>
     <div id="tradeList"></div>
-  </section>  <!-- Calculator -->  <section id="calculator">
+  </section>
+
+  <!-- Calculator -->
+  <section id="calculator">
     <h2>Calculator</h2>
     <div class="calc-container">
       <input type="text" id="calcDisplay" class="calc-display" readonly>
@@ -108,117 +127,218 @@
         <button class="clear" style="grid-column: span 4;" onclick="clearCalc()">Clear</button>
       </div>
     </div>
-  </section>  <script>
-    // Tabs
-    function showTab(tab) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-      event.target.classList.add('active');
-    }
+  </section>
 
-    // Lot Size Calculator
-    function calcLot() {
-      let bal = parseFloat(document.getElementById('balance').value);
-      let risk = parseFloat(document.getElementById('risk').value);
-      let sl = parseFloat(document.getElementById('sl').value);
-      let pipVal = parseFloat(document.getElementById('pipValue').value);
-      if (bal && risk && sl && pipVal) {
-        let riskAmount = bal * (risk/100);
-        let lotSize = riskAmount / (sl * pipVal);
-        document.getElementById('lotResult').innerText = "Lot Size: " + lotSize.toFixed(2);
-      } else {
-        document.getElementById('lotResult').innerText = "Please fill all fields.";
-      }
-    }
+<script>
+  // Tabs
+  function showTab(tab) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+  }
 
-    // Save Chart Pattern
-    function savePattern() {
-      let name = document.getElementById('patternName').value;
-      let desc = document.getElementById('patternDesc').value;
-      let imgFile = document.getElementById('patternImg').files[0];
-      if (!name) return;
-      let reader = new FileReader();
-      reader.onload = function(e) {
-        let div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `<h3>${name}</h3><p>${desc}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-        document.getElementById('patternList').appendChild(div);
-      }
-      if (imgFile) reader.readAsDataURL(imgFile);
+  // Lot Size Calculator
+  function calcLot() {
+    let bal = parseFloat(document.getElementById('balance').value);
+    let risk = parseFloat(document.getElementById('risk').value);
+    let sl = parseFloat(document.getElementById('sl').value);
+    let pipVal = parseFloat(document.getElementById('pipValue').value);
+    if (bal && risk && sl && pipVal) {
+      let riskAmount = bal * (risk/100);
+      let lotSize = riskAmount / (sl * pipVal);
+      document.getElementById('lotResult').innerText = "Lot Size: " + lotSize.toFixed(2);
+    } else {
+      document.getElementById('lotResult').innerText = "Please fill all fields.";
     }
+  }
 
-    // Save Candle Pattern
-    function saveCandle() {
-      let name = document.getElementById('candleName').value;
-      let desc = document.getElementById('candleDesc').value;
-      let imgFile = document.getElementById('candleImg').files[0];
-      if (!name) return;
-      let reader = new FileReader();
-      reader.onload = function(e) {
-        let div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `<h3>${name}</h3><p>${desc}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-        document.getElementById('candleList').appendChild(div);
-      }
-      if (imgFile) reader.readAsDataURL(imgFile);
+  // ================= Local Storage Functions =================
+
+  // ======= Chart Patterns =======
+  function savePattern() {
+    let name = document.getElementById('patternName').value;
+    let desc = document.getElementById('patternDesc').value;
+    let imgFile = document.getElementById('patternImg').files[0];
+    if (!name) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let pattern = {name:name, desc:desc, img:e.target.result};
+      let patterns = JSON.parse(localStorage.getItem('patterns') || '[]');
+      patterns.push(pattern);
+      localStorage.setItem('patterns', JSON.stringify(patterns));
+      displayPatterns();
     }
+    if(imgFile) reader.readAsDataURL(imgFile);
+  }
 
-    // Save Strategy
-    function saveStrategy() {
-      let text = document.getElementById('strategyText').value;
-      let imgFile = document.getElementById('strategyImg').files[0];
-      if (!text && !imgFile) return;
+  function displayPatterns() {
+    let patternList = document.getElementById('patternList');
+    patternList.innerHTML = '';
+    let patterns = JSON.parse(localStorage.getItem('patterns') || '[]');
+    patterns.forEach((p, i) => {
       let div = document.createElement('div');
-      div.className = 'card';
-      if (imgFile) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-          div.innerHTML = `<p>${text}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-          document.getElementById('strategyList').appendChild(div);
-        }
-        reader.readAsDataURL(imgFile);
-      } else {
-        div.innerHTML = `<p>${text}</p><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-        document.getElementById('strategyList').appendChild(div);
-      }
-    }
+      div.className='card';
+      div.innerHTML = `<h3>${p.name}</h3><p>${p.desc}</p><img src="${p.img}" class="pattern-img"><br>
+                       <button class='delete' onclick='deletePattern(${i})'>Delete</button>`;
+      patternList.appendChild(div);
+    });
+  }
 
-    // Save Trade
-    function saveTrade() {
-      let pair = document.getElementById('pair').value;
-      let lot = document.getElementById('lotInput').value;
-      let pl = document.getElementById('pl').value;
-      let imgFile = document.getElementById('tradeImg').files[0];
-      if (!pair || !lot || !pl) return;
-      let div = document.createElement('div');
-      div.className = 'card';
-      if (imgFile) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-          div.innerHTML = `<h3>${pair}</h3><p>Lot: ${lot}</p><p>P/L: $${pl}</p><img src="${e.target.result}" class="pattern-img"><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-          document.getElementById('tradeList').appendChild(div);
-        }
-        reader.readAsDataURL(imgFile);
-      } else {
-        div.innerHTML = `<h3>${pair}</h3><p>Lot: ${lot}</p><p>P/L: $${pl}</p><br><button class='delete' onclick='this.parentElement.remove()'>Delete</button>`;
-        document.getElementById('tradeList').appendChild(div);
-      }
-    }
+  function deletePattern(index){
+    let patterns = JSON.parse(localStorage.getItem('patterns') || '[]');
+    patterns.splice(index,1);
+    localStorage.setItem('patterns', JSON.stringify(patterns));
+    displayPatterns();
+  }
 
-    // Calculator Functions
-    function calcPress(val) {
-      document.getElementById('calcDisplay').value += val;
+  // ======= Candles =======
+  function saveCandle() {
+    let name = document.getElementById('candleName').value;
+    let desc = document.getElementById('candleDesc').value;
+    let imgFile = document.getElementById('candleImg').files[0];
+    if (!name) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let candle = {name:name, desc:desc, img:e.target.result};
+      let candles = JSON.parse(localStorage.getItem('candles') || '[]');
+      candles.push(candle);
+      localStorage.setItem('candles', JSON.stringify(candles));
+      displayCandles();
     }
-    function clearCalc() {
-      document.getElementById('calcDisplay').value = '';
-    }
-    function calculate() {
-      try {
-        document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value);
-      } catch {
-        document.getElementById('calcDisplay').value = 'Error';
+    if(imgFile) reader.readAsDataURL(imgFile);
+  }
+
+  function displayCandles() {
+    let candleList = document.getElementById('candleList');
+    candleList.innerHTML = '';
+    let candles = JSON.parse(localStorage.getItem('candles') || '[]');
+    candles.forEach((c,i)=>{
+      let div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`<h3>${c.name}</h3><p>${c.desc}</p><img src="${c.img}" class="pattern-img"><br>
+                     <button class='delete' onclick='deleteCandle(${i})'>Delete</button>`;
+      candleList.appendChild(div);
+    });
+  }
+
+  function deleteCandle(index){
+    let candles=JSON.parse(localStorage.getItem('candles')||'[]');
+    candles.splice(index,1);
+    localStorage.setItem('candles',JSON.stringify(candles));
+    displayCandles();
+  }
+
+  // ======= Strategies =======
+  function saveStrategy() {
+    let text = document.getElementById('strategyText').value;
+    let imgFile = document.getElementById('strategyImg').files[0];
+    if (!text && !imgFile) return;
+
+    let strategy = {text:text, img:null};
+
+    if(imgFile){
+      let reader = new FileReader();
+      reader.onload=function(e){
+        strategy.img=e.target.result;
+        storeStrategy(strategy);
       }
+      reader.readAsDataURL(imgFile);
+    }else{
+      storeStrategy(strategy);
     }
-  </script></body>
-</html>
+  }
+
+  function storeStrategy(strategy){
+    let strategies=JSON.parse(localStorage.getItem('strategies')||'[]');
+    strategies.push(strategy);
+    localStorage.setItem('strategies',JSON.stringify(strategies));
+    displayStrategies();
+  }
+
+  function displayStrategies(){
+    let strategyList=document.getElementById('strategyList');
+    strategyList.innerHTML='';
+    let strategies=JSON.parse(localStorage.getItem('strategies')||'[]');
+    strategies.forEach((s,i)=>{
+      let div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`<p>${s.text}</p>${s.img?`<img src="${s.img}" class="pattern-img">`:''}<br>
+                     <button class='delete' onclick='deleteStrategy(${i})'>Delete</button>`;
+      strategyList.appendChild(div);
+    });
+  }
+
+  function deleteStrategy(index){
+    let strategies=JSON.parse(localStorage.getItem('strategies')||'[]');
+    strategies.splice(index,1);
+    localStorage.setItem('strategies',JSON.stringify(strategies));
+    displayStrategies();
+  }
+
+  // ======= Trade History =======
+  function saveTrade() {
+    let pair=document.getElementById('pair').value;
+    let lot=document.getElementById('lotInput').value;
+    let pl=document.getElementById('pl').value;
+    let imgFile=document.getElementById('tradeImg').files[0];
+    if(!pair || !lot || !pl) return;
+
+    let trade={pair:pair, lot:lot, pl:pl, img:null};
+
+    if(imgFile){
+      let reader=new FileReader();
+      reader.onload=function(e){
+        trade.img=e.target.result;
+        storeTrade(trade);
+      }
+      reader.readAsDataURL(imgFile);
+    }else{
+      storeTrade(trade);
+    }
+  }
+
+  function storeTrade(trade){
+    let trades=JSON.parse(localStorage.getItem('trades')||'[]');
+    trades.push(trade);
+    localStorage.setItem('trades',JSON.stringify(trades));
+    displayTrades();
+  }
+
+  function displayTrades(){
+    let tradeList=document.getElementById('tradeList');
+    tradeList.innerHTML='';
+    let trades=JSON.parse(localStorage.getItem('trades')||'[]');
+    trades.forEach((t,i)=>{
+      let div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`<h3>${t.pair}</h3><p>Lot: ${t.lot}</p><p>P/L: $${t.pl}</p>${t.img?`<img src="${t.img}" class="pattern-img">`:''}<br>
+                     <button class='delete' onclick='deleteTrade(${i})'>Delete</button>`;
+      tradeList.appendChild(div);
+    });
+  }
+
+  function deleteTrade(index){
+    let trades=JSON.parse(localStorage.getItem('trades')||'[]');
+    trades.splice(index,1);
+    localStorage.setItem('trades',JSON.stringify(trades));
+    displayTrades();
+  }
+
+  // ======= Calculator =======
+  function calcPress(val){document.getElementById('calcDisplay').value+=val;}
+  function clearCalc(){document.getElementById('calcDisplay').value='';}
+  function calculate(){try{document.getElementById('calcDisplay').value=eval(document.getElementById('calcDisplay').value);}catch{document.getElementById('calcDisplay').value='Error';}}
+
+  // ======= Load data on page load =======
+  window.onload=function(){
+    displayPatterns();
+    displayCandles();
+    displayStrategies();
+    displayTrades();
+  }
+</script>
+</body>
+          </html>
